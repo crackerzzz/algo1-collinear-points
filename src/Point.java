@@ -93,7 +93,7 @@ public class Point implements Comparable<Point> {
 			return Double.NEGATIVE_INFINITY;
 		}
 
-		return (that.y - this.y) / (that.x - this.x);
+		return (that.y - this.y) * 1.0 / (that.x - this.x);
 	}
 
 	/**
@@ -119,17 +119,22 @@ public class Point implements Comparable<Point> {
 		};
 	}
 
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
+	/**
+	 * Returns a string representation of this point. This method is provide for
+	 * debugging; your program should not rely on the format of the string
+	 * representation.
+	 *
+	 * @return a string representation of this point
+	 */
+	public String toString() {
+		/* DO NOT MODIFY */
+		return "(" + x + ", " + y + ")";
 	}
 
 	public static void main(String[] args) {
 		Point p = new Point(10, 1);
-		System.out.println(p.compareTo(new Point(1, 1)));
+		System.out.println(p.slopeTo(new Point(1, 1)));
+		System.out.println(p.slopeTo(new Point(10, 3)));
 	}
 
 }

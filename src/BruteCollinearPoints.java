@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -6,8 +7,8 @@ import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 public class BruteCollinearPoints {
-	private final Point[] points;
-	private List<LineSegment> collinear;
+	private List<LineSegment> collinear = new ArrayList<>();
+	private int size;
 
 	// finds all line segments containing 4 points
 	public BruteCollinearPoints(Point[] points) {
@@ -24,34 +25,58 @@ public class BruteCollinearPoints {
 		}
 
 		Arrays.sort(points);
-		Point p = points[0];
-		for (int i = 1; i < points.length; i++) {
-			if (p.compareTo(points[i]) == 0) {
+		for (int i = 0; i < points.length - 1; i++) {
+			if (points[i].compareTo(points[i + 1]) == 0) {
 				throw new IllegalArgumentException();
 			}
 		}
-
-		this.points = points;
+		if (points.length < 4) {
+			return;
+		}
 
 		final int N = points.length;
 
-		final Point p = points[0];
-		final Point q = points[1];
-		final Point r = points[2];
-		final Point s = points[3];
-
-		double pqSlope = p.slopeTo(q);
-		double prSlope = p.slopeTo(r);
-		double psSlope = p.slopeTo(s);
-
-		if (pqSlope == prSlope && prSlope == psSlope) {
-			collinear.add(new LineSegment(p, s));
+		for (int i = 0; i < N - 3; i++) {
+			final Point p = points[i];
+			for (int j = i + 1; j < N - 2; j++) {
+				final Point q = points[j];
+				for (int k = j + 1; k < N - 1; k++) {
+					final Point r = points[k];
+					for (int l = k + 1; l < N; l++) {
+						final Point s = points[l];
+						if (isCollinear(p, q, r, s)) {
+							LineSegment ls = new LineSegment(p, s);
+							System.out.println("Adding line segment: " + ls);
+							collinear.add(ls);
+							size++;
+						}
+					}
+				}
+			}
 		}
+
+	}
+
+	private boolean isCollinear(Point p, Point q, Point r, Point s) {
+		double pqSlope = p.slopeTo(q);
+		print(p, q, pqSlope);
+		double prSlope = p.slopeTo(r);
+		print(p, r, prSlope);
+		double psSlope = p.slopeTo(s);
+		print(p, s, psSlope);
+
+		boolean slope = pqSlope == prSlope && prSlope == psSlope;
+		System.out.println("isCollinear: " + slope);
+		return slope;
+	}
+
+	public void print(Point a, Point b, double slope) {
+		System.out.println("Slope between " + a + " & " + b + " : " + slope);
 	}
 
 	// the number of line segments
 	public int numberOfSegments() {
-		return collinear.size();
+		return size;
 	}
 
 	// the line segments
@@ -61,7 +86,7 @@ public class BruteCollinearPoints {
 
 	public static void main(String[] args) {
 		// read the n points from a file
-		In in = new In(args[0]);
+		In in = new In("./samples/input9.txt");
 		int n = in.readInt();
 		Point[] points = new Point[n];
 		for (int i = 0; i < n; i++) {
