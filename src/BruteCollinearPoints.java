@@ -11,29 +11,32 @@ public class BruteCollinearPoints {
   private int size;
 
   // finds all line segments containing 4 points
-  public BruteCollinearPoints(Point[] points) {
+  public BruteCollinearPoints(Point[] tpoints) {
+
     // Throw a java.lang.IllegalArgumentException if the argument to the constructor
     // is null, if any point in the array is null, or if the argument to the
     // constructor contains a repeated point.
-    if (points == null) {
+    if (tpoints == null) {
       throw new IllegalArgumentException();
     }
-    for (Point p : points) {
+    for (Point p : tpoints) {
       if (p == null) {
         throw new IllegalArgumentException();
       }
     }
 
-    Arrays.sort(points);
-    for (int i = 0; i < points.length - 1; i++) {
-      if (points[i].compareTo(points[i + 1]) == 0) {
+    Point[] pointsSorted = Arrays.copyOf(tpoints, tpoints.length);
+    Arrays.sort(pointsSorted);
+    for (int i = 0; i < pointsSorted.length - 1; i++) {
+      if (pointsSorted[i].compareTo(pointsSorted[i + 1]) == 0) {
         throw new IllegalArgumentException();
       }
     }
-    if (points.length < 4) {
+    if (pointsSorted.length < 4) {
       return;
     }
 
+    Point[] points = Arrays.copyOf(tpoints, tpoints.length);
     final int N = points.length;
 
     for (int i = 0; i < N - 3; i++) {
@@ -70,9 +73,9 @@ public class BruteCollinearPoints {
     return slope;
   }
 
-  private void print(Point a, Point b, double slope) {
-    System.out.println("Slope between " + a + " & " + b + " : " + slope);
-  }
+//  private void print(Point a, Point b, double slope) {
+//    System.out.println("Slope between " + a + " & " + b + " : " + slope);
+//  }
 
   // the number of line segments
   public int numberOfSegments() {
