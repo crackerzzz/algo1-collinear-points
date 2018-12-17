@@ -6,12 +6,12 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
-public class BruteCollinearPoints {
+public class FastCollinearPoints {
   private final List<LineSegment> collinear = new ArrayList<>();
   private int size;
 
   // finds all line segments containing 4 points
-  public BruteCollinearPoints(Point[] points) {
+  public FastCollinearPoints(Point[] points) {
     // Throw a java.lang.IllegalArgumentException if the argument to the constructor
     // is null, if any point in the array is null, or if the argument to the
     // constructor contains a repeated point.
@@ -35,43 +35,44 @@ public class BruteCollinearPoints {
     }
 
     final int N = points.length;
+    for (int i = 0; i < N; i++) {
+      final Point[] pointsCopy = Arrays.copyOf(points, N);
+      Arrays.sort(pointsCopy, pointsCopy[i].slopeOrder());
+//			System.out.println(Arrays.asList(pointsCopy));
 
-    for (int i = 0; i < N - 3; i++) {
-      final Point p = points[i];
-      for (int j = i + 1; j < N - 2; j++) {
-        final Point q = points[j];
-        for (int k = j + 1; k < N - 1; k++) {
-          final Point r = points[k];
-          for (int m = k + 1; m < N; m++) {
-            final Point s = points[m];
-            if (isCollinear(p, q, r, s)) {
-              LineSegment ls = new LineSegment(p, s);
-//							System.out.println("Adding line segment: " + ls);
-              collinear.add(ls);
-              size++;
-            }
+      int count = 1;
+      int current = 0;
+      double slope1 = pointsCopy[current].slopeTo(pointsCopy[1]);
+      for (int j = 2; j < N; j++) {
+        double slope2 = pointsCopy[current].slopeTo(pointsCopy[j]);
+        if (slope1 != slope2) {
+          if (count >= 3) {
+            addCollinear(pointsCopy, current, j - 1);
+            // collinear points
+            count = 1;
+            current = j - 1;
+            slope1 = slope2;
           }
+        } else {
+          count++;
         }
+      }
+
+      if (count >= 3) {
+        addCollinear(pointsCopy, current, N - 1);
       }
     }
 
   }
 
-  private boolean isCollinear(Point p, Point q, Point r, Point s) {
-    double pqSlope = p.slopeTo(q);
-//		print(p, q, pqSlope);
-    double prSlope = p.slopeTo(r);
-//		print(p, r, prSlope);
-    double psSlope = p.slopeTo(s);
-//		print(p, s, psSlope);
+  private void addCollinear(Point[] pointsCopy, int from, int to) {
+    final Point[] copies = Arrays.copyOfRange(pointsCopy, from + 1, to + 1);
+    Arrays.sort(copies);
+//		System.out.println("Collinear points" + Arrays.asList(copies));
+    collinear.add(new LineSegment(pointsCopy[0], copies[copies.length - 1]));
 
-    boolean slope = pqSlope == prSlope && prSlope == psSlope;
-//		System.out.println("isCollinear: " + slope);
-    return slope;
-  }
-
-  private void print(Point a, Point b, double slope) {
-    System.out.println("Slope between " + a + " & " + b + " : " + slope);
+//		System.out.println(collinear);
+    size++;
   }
 
   // the number of line segments
@@ -105,7 +106,7 @@ public class BruteCollinearPoints {
     StdDraw.show();
 
     // print and draw the line segments
-    BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+    FastCollinearPoints collinear = new FastCollinearPoints(points);
     for (LineSegment segment : collinear.segments()) {
       StdOut.println(segment);
       segment.draw();
