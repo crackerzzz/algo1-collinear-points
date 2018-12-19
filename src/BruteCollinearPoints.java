@@ -36,7 +36,7 @@ public class BruteCollinearPoints {
       return;
     }
 
-    Point[] points = Arrays.copyOf(tpoints, tpoints.length);
+    Point[] points = Arrays.copyOf(pointsSorted, pointsSorted.length);
     final int N = points.length;
 
     for (int i = 0; i < N - 3; i++) {
